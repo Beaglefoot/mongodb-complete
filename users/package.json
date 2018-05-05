@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "nodemon --exec 'clear && mocha'"
   },
   "keywords": [],
   "author": "",
