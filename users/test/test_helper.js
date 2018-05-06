@@ -2,13 +2,16 @@ const mongoose = require('mongoose');
 
 mongoose.Promise = global.Promise;
 
-before(done => {
-  mongoose.connect('mongodb://localhost/users_test');
-  mongoose.connection
-    .once('open', done)
-    .on('error', error => console.warn('Warning', error));
-});
+before(() =>
+  mongoose
+    .connect('mongodb://localhost/users_test')
+    .catch(err => console.warn('Warning', err))
+);
 
-beforeEach(done => {
-  mongoose.connection.collections.users.drop(done);
-});
+beforeEach(() =>
+  // Workaround for a scenario where you have to manually
+  // create 'users' collection inside mongoDB
+  mongoose.connection
+    .createCollection('users')
+    .then(() => mongoose.connection.dropCollection('users'))
+    .catch(err => console.warn('Failed to clean up users collection', err)));
