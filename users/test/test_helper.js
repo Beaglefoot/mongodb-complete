@@ -10,8 +10,16 @@ before(() =>
 
 beforeEach(() =>
   // Workaround for a scenario where you have to manually
-  // create 'users' collection inside mongoDB
-  mongoose.connection
-    .createCollection('users')
-    .then(() => mongoose.connection.dropCollection('users'))
-    .catch(err => console.warn('Failed to clean up users collection', err)));
+  // create collections inside mongoDB.
+  // Mongoose normalizes collection names, so blogposts is
+  // entirely in lowercase.
+  ['users', 'comments', 'blogposts'].reduce(
+    (chain, collection) =>
+      chain
+        .then(() => mongoose.connection.createCollection(collection))
+        .then(() => mongoose.connection.dropCollection(collection))
+        .catch(err =>
+          console.warn(`Failed to clean up ${collection} collection`)
+        ),
+    Promise.resolve()
+  ));
